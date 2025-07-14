@@ -1,10 +1,4 @@
-from enum import Enum
-from app.dominio.expediente import Expediente
-
-class RolUsuario(Enum):
-    FISCAL = "FISCAL"
-    ASISTENTE = "ASISTENTE"
-    ADMIN = "ADMIN"
+from app.dominio.Rol_Usuario import RolUsuario
 
 class Usuario:
     def __init__(self, id: int, nombre: str, correo: str, rol: RolUsuario):
@@ -19,15 +13,5 @@ class Usuario:
     def es_asistente(self) -> bool:
         return self.rol == RolUsuario.ASISTENTE
 
-    def puede_acceder(self, expediente: Expediente) -> bool:
-        # Esto depende de tu lógica. Aquí va un ejemplo:
-        if self.rol == RolUsuario.ADMIN:
-            return True
-        if self.rol == RolUsuario.FISCAL and expediente.fiscal_id == self.id:
-            return True
-        if self.rol == RolUsuario.ASISTENTE and expediente.asistente_id == self.id:
-            return True
-        return False
-
-    def __repr__(self):
-        return f"<Usuario {self.nombre} - {self.rol.value}>"
+    def puede_acceder(self, expediente) -> bool:
+        return expediente.asignado_a == self

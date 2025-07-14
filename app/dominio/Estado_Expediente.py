@@ -4,6 +4,6 @@
 from enum import Enum
 
 class EstadoExpediente(Enum):
-    EN_CURSO = 1
-    COMPLETADO = 2
-    ARCHIVADO = 3
+    EN_CURSO = "EN_CURSO"
+    COMPLETADO = "COMPLETADO"
+    ARCHIVADO = "ARCHIVADO"

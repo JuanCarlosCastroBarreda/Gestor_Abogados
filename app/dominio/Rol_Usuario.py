@@ -4,6 +4,6 @@
 from enum import Enum
 
 class RolUsuario(Enum):
-    FISCAL = 1
-    ASISTENTE = 2
-    ADMIN = 3
+    FISCAL = "FISCAL"
+    ASISTENTE = "ASISTENTE"
+    ADMIN = "ADMIN"
