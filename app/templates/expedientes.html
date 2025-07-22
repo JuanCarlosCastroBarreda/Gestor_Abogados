@@ -1,29 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Expedientes del Usuario</title>
-    <style>
-        table { border-collapse: collapse; width: 80%; margin: 20px auto; }
-        th, td { border: 1px solid black; padding: 8px; text-align: center; }
-        th { background-color: #f2f2f2; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Expedientes del Usuario</title>
+  <style>
+    table { border-collapse: collapse; width: 80%; margin: 20px auto; }
+    th, td { border: 1px solid black; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    h1 { text-align: center; }
+    ul { width: 80%; margin: 20px auto; padding: 0; list-style: none; }
+    li a { text-decoration: none; display: block; padding: 8px; border: 1px solid #ccc; margin-bottom: 5px; background: #f9f9f9; }
+  </style>
 </head>
 <body>
-    <h1 style="text-align:center;">Lista de Expedientes</h1>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Estado</th>
-        </tr>
-        {% for exp in expedientes %}
-        <tr>
-            <td>{{ exp.id }}</td>
-            <td>{{ exp.cliente }}</td>
-            <td>{{ exp.estado }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+  <h1>Lista de Expedientes</h1>
+
+  <!-- Tabla con detalles -->
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Cliente</th>
+      <th>Estado</th>
+    </tr>
+    {% for exp in expedientes %}
+    <tr>
+      <td>{{ exp.id }}</td>
+      <td>{{ exp.cliente }}</td>
+      <td>{{ exp.estado }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <!-- Lista con enlaces -->
+  <ul>
+    {% for exp in expedientes %}
+    <li>
+      <a href="{{ url_for('expediente_bp.vista_detalle_expediente', expediente_id=exp.id) }}">
+        {{ exp.cliente }} - {{ exp.estado }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
 </body>
 </html>

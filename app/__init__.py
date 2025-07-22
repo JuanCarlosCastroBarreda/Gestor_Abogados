@@ -14,4 +14,8 @@ def create_app():
         from app.dominio.expediente import Expediente
         db.create_all()
 
+    # REGISTRO DEL BLUEPRINT
+    from app.presentacion.controlador_expediente import expediente_bp
+    app.register_blueprint(expediente_bp)
+
     return app
