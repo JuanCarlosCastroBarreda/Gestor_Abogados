@@ -15,3 +15,6 @@ class Usuario:
 
     def puede_acceder(self, expediente) -> bool:
         return expediente.asignado_a == self
+
+    def __repr__(self):
+        return f"Usuario(id={self.id}, nombre='{self.nombre}', correo='{self.correo}', rol={self.rol.name})"

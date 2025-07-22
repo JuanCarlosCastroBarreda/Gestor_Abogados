@@ -6,46 +6,57 @@
 from app.dominio.expediente import Expediente
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from typing import Protocol, Optional
+import logging
 
-class RepositorioExpedienteSQL:
+logger = logging.getLogger(__name__)
+
+# Principio de Segregación de Interfaces (ISP)
+class IRepositorioExpediente(Protocol):
+    def guardar_expediente(self, expediente: Expediente) -> None: ...
+    def listar_expedientes(self) -> list[Expediente]: ...
+    def buscar_expediente_por_id(self, expediente_id: int) -> Optional[Expediente]: ...
+    def eliminar_expediente_por_id(self, expediente_id: int) -> None: ...
+    def actualizar_expediente(self, expediente_id: int, datos_actualizados: dict) -> None: ...
+
+# Principio de Responsabilidad Única (SRP)
+class RepositorioExpedienteSQL(IRepositorioExpediente):
     def __init__(self, sesion: Session):
         self.sesion = sesion
 
     def guardar_expediente(self, expediente: Expediente) -> None:
-        try:
-            self.sesion.add(expediente)
-            self.sesion.commit()
-        except SQLAlchemyError as error:
-            self.sesion.rollback()
-            print(f"No se pudo guardar el expediente: {error}")
+        self._ejecutar_transaccion(lambda: self.sesion.add(expediente))
 
     def listar_expedientes(self) -> list[Expediente]:
         return self.sesion.query(Expediente).all()
 
-    def buscar_expediente_por_id(self, expediente_id: int) -> Expediente | None:
+    def buscar_expediente_por_id(self, expediente_id: int) -> Optional[Expediente]:
         return self.sesion.query(Expediente).filter(Expediente.id == expediente_id).first()
 
     def eliminar_expediente_por_id(self, expediente_id: int) -> None:
-        try:
+        def eliminar():
             expediente = self.buscar_expediente_por_id(expediente_id)
             if expediente:
                 self.sesion.delete(expediente)
-                self.sesion.commit()
             else:
-                print(f"No se encontró el expediente con ID {expediente_id}")
-        except SQLAlchemyError as error:
-            self.sesion.rollback()
-            print(f"No se pudo eliminar el expediente: {error}")
+                logger.warning(f"No se encontró el expediente con ID {expediente_id}")
+        self._ejecutar_transaccion(eliminar)
 
     def actualizar_expediente(self, expediente_id: int, datos_actualizados: dict) -> None:
-        try:
+        def actualizar():
             expediente = self.buscar_expediente_por_id(expediente_id)
             if expediente:
                 for campo, valor in datos_actualizados.items():
                     setattr(expediente, campo, valor)
-                self.sesion.commit()
             else:
-                print(f"No se encontró el expediente con ID {expediente_id}")
+                logger.warning(f"No se encontró el expediente con ID {expediente_id}")
+        self._ejecutar_transaccion(actualizar)
+
+    # Principio de Abierto/Cerrado (OCP) → método genérico para ejecutar transacciones
+    def _ejecutar_transaccion(self, operacion: callable) -> None:
+        try:
+            operacion()
+            self.sesion.commit()
         except SQLAlchemyError as error:
             self.sesion.rollback()
-            print(f"No se pudo actualizar el expediente: {error}")
+            logger.error(f"Error en la transacción: {error}")
