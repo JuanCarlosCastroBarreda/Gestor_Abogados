@@ -13,4 +13,8 @@ def create_app():
     with app.app_context():
         from app.dominio.expediente import Expediente
 
+    # REGISTRO DEL BLUEPRINT
+    from app.presentacion.controlador_expediente import expediente_bp
+    app.register_blueprint(expediente_bp)
+
     return app

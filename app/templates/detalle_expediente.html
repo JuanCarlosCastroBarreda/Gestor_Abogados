@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<head><title>Detalle Expediente</title></head>
+<body>
+    <h1>Detalle de Expediente</h1>
+    <p>ID: {{ expediente.id }}</p>
+    <p>Cliente: {{ expediente.cliente }}</p>
+    <p>Estado: {{ expediente.estado }}</p>
+    <a href="{{ url_for('expediente_bp.vista_expedientes') }}">Volver</a>
+</body>
+</html>

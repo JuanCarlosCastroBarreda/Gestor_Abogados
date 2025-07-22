@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<head><title>Expedientes</title></head>
+<body>
+    <h1>Lista de Expedientes</h1>
+    <ul>
+        {% for exp in expedientes %}
+        <li>
+            <a href="{{ url_for('expediente_bp.vista_detalle_expediente', expediente_id=exp.id) }}">
+                {{ exp.cliente }} - {{ exp.estado }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
