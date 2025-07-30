@@ -2,6 +2,8 @@ from app import db
 from app.dominio.documento import Documento
 from app.infraestructura.usuario_sql import UsuarioModelo
 from app.dominio.Rol_Usuario import RolUsuario
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 class Expediente(db.Model):
     __tablename__ = 'expedientes'

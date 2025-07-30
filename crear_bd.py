@@ -10,15 +10,12 @@ with app.app_context():
     db.create_all()
     print("Base de datos creada correctamente.")
 
-    # Crear un usuario de prueba
-    nuevo_usuario = Usuario(id=1, nombre="Juan Fiscal", correo="juan@fiscal.com", rol=RolUsuario.FISCAL)
+    nuevo_usuario = Usuario(id=None, nombre="Juan Fiscal", correo="juan@fiscal.com", rol=RolUsuario.FISCAL)
     usuario_modelo = entidad_a_usuario_modelo(nuevo_usuario)
 
-    # Guardar en la base de datos
     db.session.add(usuario_modelo)
     db.session.commit()
     print("Usuario insertado.")
 
-    # Mostrar tablas
     inspector = inspect(db.engine)
     print(inspector.get_table_names())

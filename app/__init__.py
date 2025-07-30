@@ -12,5 +12,6 @@ def create_app():
     # Importar modelos aquí para que SQLAlchemy los registre
     with app.app_context():
         from app.dominio.expediente import Expediente
+        db.create_all()
 
     return app

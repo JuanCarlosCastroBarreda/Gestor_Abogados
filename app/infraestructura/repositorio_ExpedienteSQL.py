@@ -1,51 +1,34 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-# app/infraestructura/repositorio_expediente_sql.py
+# app/infraestructura/repositorio_ExpedienteSQL.py
 
 from app.dominio.expediente import Expediente
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
+from app.dominio.i_Expediente_Repositorio import IExpedienteRepositorio
+from app import db
 
-class RepositorioExpedienteSQL:
-    def __init__(self, sesion: Session):
+class RepositorioExpedienteSQL(IExpedienteRepositorio):
+    def __init__(self, sesion):
         self.sesion = sesion
+    def guardar(self, expediente: Expediente) -> None:
+        db.session.add(expediente)
+        db.session.commit() 
+    def obtener_por_id(self, id: int) -> Expediente:
+        return Expediente.query.get(id)
+    def listar_todos(self) -> list[Expediente]:
+        return Expediente.query.all()
 
-    def guardar_expediente(self, expediente: Expediente) -> None:
-        try:
-            self.sesion.add(expediente)
-            self.sesion.commit()
-        except SQLAlchemyError as error:
-            self.sesion.rollback()
-            print(f"No se pudo guardar el expediente: {error}")
+    def eliminar(self, id: int) -> None:
+        expediente = Expediente.query.get(id)
+        if expediente:
+            db.session.delete(expediente)
+            db.session.commit()
 
-    def listar_expedientes(self) -> list[Expediente]:
-        return self.sesion.query(Expediente).all()
+    def actualizar_estado(self, id: int, nuevo_estado: str) -> None:
+        expediente = Expediente.query.get(id)
+        if expediente:
+            expediente.estado = nuevo_estado
+            db.session.commit()
 
-    def buscar_expediente_por_id(self, expediente_id: int) -> Expediente | None:
-        return self.sesion.query(Expediente).filter(Expediente.id == expediente_id).first()
-
-    def eliminar_expediente_por_id(self, expediente_id: int) -> None:
-        try:
-            expediente = self.buscar_expediente_por_id(expediente_id)
-            if expediente:
-                self.sesion.delete(expediente)
-                self.sesion.commit()
-            else:
-                print(f"No se encontró el expediente con ID {expediente_id}")
-        except SQLAlchemyError as error:
-            self.sesion.rollback()
-            print(f"No se pudo eliminar el expediente: {error}")
-
-    def actualizar_expediente(self, expediente_id: int, datos_actualizados: dict) -> None:
-        try:
-            expediente = self.buscar_expediente_por_id(expediente_id)
-            if expediente:
-                for campo, valor in datos_actualizados.items():
-                    setattr(expediente, campo, valor)
-                self.sesion.commit()
-            else:
-                print(f"No se encontró el expediente con ID {expediente_id}")
-        except SQLAlchemyError as error:
-            self.sesion.rollback()
-            print(f"No se pudo actualizar el expediente: {error}")
+    def obtener_por_usuario(self, usuario) -> list[Expediente]:
+        return Expediente.query.filter(
+            (Expediente.fiscal_id == usuario.id) |
+            (Expediente.asistente_id == usuario.id)
+        ).all()
